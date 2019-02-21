@@ -1,0 +1,25 @@
+
+FOLDER=stx-fault
+PROJECT=fm-common
+TARFILE="fm-common-0.0.tar.gz"
+
+if [ ! -f "$TARFILE" ] ; then
+        if [ ! -d "$FOLDER" ] ; then
+            git clone --depth=1 https://git.starlingx.io/$FOLDER
+        fi
+        cd $FOLDER/fm-common
+        cp -rf sources/ $PROJECT-0.0
+        tar -czf $TARFILE $PROJECT-0.0/
+        cp $TARFILE ../../
+        cd ../../
+        rm -rf $FOLDER
+fi
+
+tar -xvf $TARFILE
+cd $PROJECT-0.0
+debmake -b:python
+cp ../rules debian/
+cp ../control debian/
+
+dpkg-buildpackage
+
